@@ -42,6 +42,8 @@ export const Home = () => {
   const { isAuthModalOpen, isDropDownModalOpen } = useAuth();
   const { alert } = useAlert();
 
+  const [isLoading, setIsLoading] = useState(true); // State to manage loading state
+
   useEffect(() => {
     (async () => {
       try {
@@ -51,12 +53,13 @@ export const Home = () => {
 
         setTestData(data);
         setHotels(data ? data.slice(0, 16) : []);
+        setIsLoading(false); 
       } catch (err) {
         console.log(err);
+        setIsLoading(false); 
       }
     })();
   }, [hotelCategory]);
-
 
   const fetchMoreData = () => {
     if (hotels.length >= testData.length) {
@@ -99,15 +102,17 @@ export const Home = () => {
 
   return (
     <div className="relative">
-      <Navbar route="home"/>
+      <Navbar route="home" />
       <Categories />
-      {hotels && hotels.length > 0 ? (
+      {isLoading ? (
+        <div className="loading-text">Loading...</div>
+      ) : hotels && hotels.length > 0 ? (
         <InfiniteScroll
           dataLength={hotels.length}
           next={fetchMoreData}
           hasMore={hasMore}
           loader={
-            hotels.length > 0 && <h3 className="alert-text">Loading...</h3>
+            <h3 className="alert-text">Loading...</h3>
           }
           endMessage={<p className="alert-text">You have seen it all</p>}
         >
